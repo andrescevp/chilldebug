@@ -1,0 +1,15 @@
+{
+  "name": "aacp/chilldebug",
+  "license": "MIT",
+  "type": "library",
+  "description": "Library to do from debug something easy (hopefully)",
+  "autoload": {
+    "psr-4": {
+      "ChillDebug\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=5.5.9",
+    "ext-xdebug": ">=2.2"
+  }
+}
