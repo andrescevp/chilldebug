@@ -49,7 +49,7 @@ class Debugger
     /**
      * Get and dump the report in the location given in the configuration
      */
-    public function getStackTrace()
+    public function gerCodeCoverageInformation()
     {
         $this->rawCoverage = xdebug_get_code_coverage();
         ini_set('xdebug.collect_params', 3);
@@ -61,15 +61,19 @@ class Debugger
             }
 
             $this->stackTraceInfo[$file] = [];
+            $fileAsArray = file($file);
+            $totalAmountFileLines = count($fileAsArray);
+            $linesCovered = 0;
             foreach ($lines as $line => $executedTimes) {
-                $fileAsArray = file($file);
                 $this->stackTraceInfo[$file]['lines'][$line] = [
                     'executions' => $executedTimes,
                     'content' => trim($fileAsArray[$line - 1])
                 ];
+                $linesCovered++;
             }
+            $this->stackTraceInfo[$file]['lines_coverage'] = (($linesCovered/$totalAmountFileLines) * 100);
         }
 
-        $this->template->dump($this->stackTraceInfo);
+        $this->template->dump($this->stackTraceInfo, 'codeCoverage');
     }
 }

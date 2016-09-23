@@ -26,6 +26,6 @@ $debugger->enable();
 
 a_test('friend');
 
-$debugger->getStackTrace();
+$debugger->gerCodeCoverageInformation();
 $debugger->disable();
 ```

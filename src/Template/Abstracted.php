@@ -40,11 +40,15 @@ abstract class Abstracted
     }
 
     /**
-     * @param array $stackTrace
+     * @param array $informationAsArray
      */
-    protected function removeCommonInfo(array &$stackTrace)
+    protected function removeCommonInfo(array &$informationAsArray)
     {
-        unset($stackTrace['total_time_execution'], $stackTrace['peak_memory_usage']);
+        unset(
+            $informationAsArray['total_time_execution'],
+            $informationAsArray['peak_memory_usage'],
+            $informationAsArray['lines_coverage']
+        );
     }
 
     /**
@@ -52,5 +56,12 @@ abstract class Abstracted
      *
      * @return mixed
      */
-    abstract public function dump(array $stackTrace);
+    abstract public function dump(array $informationAsArray, $kindOfInformation);
+
+    /**
+     * @param array $informationAsArray
+     *
+     * @return mixed
+     */
+    abstract protected function codeCoverageMapper(array $informationAsArray);
 }
