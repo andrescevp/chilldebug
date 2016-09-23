@@ -49,7 +49,7 @@ class Debugger
     /**
      * Get and dump the report in the location given in the configuration
      */
-    public function gerCodeCoverageInformation()
+    public function getCodeCoverageInformation()
     {
         $this->rawCoverage = xdebug_get_code_coverage();
         ini_set('xdebug.collect_params', 3);
