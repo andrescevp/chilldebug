@@ -56,6 +56,7 @@ class HtmlTemplate extends Abstracted
         $this->removeCommonInfo($informationAsArray);
 
         $report .= '<table class="table">';
+
         foreach ($informationAsArray as $file => $fileInformation) {
             $report .= '<tr><td><strong>File:</strong></td><td colspan="2">' . $file . '</td></tr>';
             $report .= '<tr><td><strong>File coverage:</strong></td><td colspan="2">' . $fileInformation['lines_coverage'] . ' % </td></tr>';

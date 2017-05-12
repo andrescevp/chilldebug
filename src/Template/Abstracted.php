@@ -24,9 +24,10 @@ abstract class Abstracted
      */
     private function getReportFilename($format)
     {
-        $debugTime = date('d_m_y_H_i_s');
+        preg_match('/0\.(?P<decimal>\d+)/', microtime(), $matches);
+        $codeCoverageFile = 'code_coverage_' . date('Y_m_d_h_i_s_').$matches['decimal'];
 
-        return $debugTime . '_report.' . $format;
+        return $codeCoverageFile  . '.' . $format;
     }
 
     /**
@@ -50,6 +51,7 @@ abstract class Abstracted
             $informationAsArray['lines_coverage']
         );
     }
+
 
     /**
      * @param array $stackTrace
