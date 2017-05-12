@@ -30,28 +30,6 @@ $debugger->getCodeCoverageInformation();
 $debugger->disable();
 ```
 
-Using plain temnplates
-----------------------
-
-```
-include_once(__DIR__ . '/../vendor/autoload.php');
-
-function a_test($str)
-{
-    echo "\nHi: $str";
-}
-
-$config = new Configuration();
-$config->template = 'plain';
-$debugger = new \ChillDebug\Debugger($config);
-$debugger->enable();
-
-a_test('friend');
-
-$debugger->getCodeCoverageInformation();
-$debugger->disable();
-```
-
 Working with html templates
 ---------------------------
 

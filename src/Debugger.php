@@ -19,7 +19,7 @@ class Debugger
     /**
      * @var array
      */
-    private   $rawCoverage;
+    private $rawCoverage;
 
     private $codeCoverage;
 
@@ -31,29 +31,29 @@ class Debugger
     public function __construct(Configuration $configuration = null)
     {
         if (!$configuration) {
-            $configuration = new Configuration();
+            $configuration       = new Configuration();
             $this->configuration = $configuration;
 
         }
 
         $templateFactory = new Factory();
-        $this->template = $templateFactory->getTemplate($configuration->template);
+        $this->template  = $templateFactory->getTemplate($configuration->template);
         Filesystem::createDir($configuration->reportsPath);
         $this->template->setReportPath($configuration->reportsPath);
         preg_match('/0\.(?P<decimal>\d+)/', microtime(), $matches);
-        $traceFile = 'trace_file_' . date('Y_m_d_h_i_s_').$matches['decimal'];
+        $traceFile = 'trace_file_' . date('Y_m_d_h_i_s_') . $matches['decimal'];
 
         $this->traceFile = realpath($configuration->reportsPath) . DIRECTORY_SEPARATOR . $traceFile;
 
         file_put_contents(
-            $this->traceFile.'.svr',
+            $this->traceFile . '.svr',
             json_encode(
                 [
-                    'time'      => time(),
-                    'server'    => $_SERVER,
-                    'post'      => $_POST,
-                    'get'       => $_GET,
-                    'files'     => $_FILES,
+                    'time'   => time(),
+                    'server' => $_SERVER,
+                    'post'   => $_POST,
+                    'get'    => $_GET,
+                    'files'  => $_FILES,
                 ],
                 JSON_PRETTY_PRINT
             )
@@ -80,27 +80,20 @@ class Debugger
      */
     public function disable()
     {
-        xdebug_stop_trace();
-        xdebug_stop_code_coverage();
         $this->extractCodeCoverage();
 
+        xdebug_stop_trace();
+        xdebug_stop_code_coverage();
+
         file_put_contents(
-            $this->traceFile.'.cvg',
+            $this->traceFile . '.cvg',
             json_encode(
                 $this->codeCoverage,
                 JSON_PRETTY_PRINT
             )
         );
-    }
 
-    /**
-     * Get and dump the report in the location given in the configuration
-     */
-    public function getCodeCoverageInformation()
-    {
-        $this->extractCodeCoverage();
-
-        $this->template->dump($this->codeCoverage, 'codeCoverage');
+        $this->template->dump($this->traceFile);
     }
 
     /**
@@ -113,20 +106,21 @@ class Debugger
     public function isFile($filename)
     {
         if ($filename == '-' ||
-            strpos($filename, 'eval()\'d code') !== FALSE ||
-            strpos($filename, 'Debugger') !== FALSE ||
-            strpos($filename, 'runtime-created function') !== FALSE ||
-            strpos($filename, 'runkit created function') !== FALSE ||
-            strpos($filename, 'assert code') !== FALSE ||
-            strpos($filename, 'regexp code') !== FALSE) {
-            return FALSE;
+            strpos($filename, 'eval()\'d code') !== false ||
+            strpos($filename, 'Debugger') !== false ||
+            strpos($filename, 'runtime-created function') !== false ||
+            strpos($filename, 'runkit created function') !== false ||
+            strpos($filename, 'assert code') !== false ||
+            strpos($filename, 'regexp code') !== false
+        ) {
+            return false;
         }
-        return TRUE;
+        return true;
     }
 
     protected function extractCodeCoverage()
     {
-        $this->rawCoverage                            = xdebug_get_code_coverage();
+        $this->rawCoverage                          = xdebug_get_code_coverage();
         $this->codeCoverage['total_time_execution'] = xdebug_time_index();
         $this->codeCoverage['peak_memory_usage']    = xdebug_peak_memory_usage();
         foreach ($this->rawCoverage as $file => $lines) {
@@ -134,13 +128,13 @@ class Debugger
                 continue;
             }
             $this->codeCoverage[$file] = [];
-            $fileAsArray                                 = file($file);
-            $totalAmountFileLines                        = count($fileAsArray);
-            $linesCovered                                = 0;
+            $fileAsArray               = file($file);
+            $totalAmountFileLines      = count($fileAsArray);
+            $linesCovered              = 0;
             foreach ($lines as $line => $executedTimes) {
                 $this->codeCoverage[$file]['lines'][$line] = [
                     'executions' => $executedTimes,
-                    'content'    => trim($fileAsArray[$line - 1])
+                    'content'    => trim($fileAsArray[$line - 1]),
                 ];
                 $linesCovered++;
             }

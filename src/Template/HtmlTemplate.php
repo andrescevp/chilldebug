@@ -18,20 +18,17 @@ class HtmlTemplate extends Abstracted
      *
      * @return mixed
      */
-    public function dump(array $informationAsArray, $kindOfInformation)
+    public function dump($fileName)
     {
-        $functionMapper = $kindOfInformation . 'Mapper';
+        $template = file_get_contents(__DIR__ . '/../Resources/templates/html_report.html');
 
-        if (!method_exists($this, $functionMapper)) {
-            throw new \LogicException(
-                'The kind of information: ' . $kindOfInformation . ' have not function candidate'
-            );
-        }
+        $coverage = $this->codeCoverageMapper(json_decode(file_get_contents($fileName.'.cvg'), true));
+        $server = file_get_contents($fileName.'.svr');
+        $trace = file_get_contents($fileName.'.xt');
 
-        $report = $this->$functionMapper($informationAsArray);
+        $report = '';
 
-
-        Filesystem::dump($this->getFullReportPath('html'), $report);
+        Filesystem::dump($fileName . '.html', sprintf($template, $fileName, '', $coverage, ''));
     }
 
     /**
@@ -41,15 +38,12 @@ class HtmlTemplate extends Abstracted
      */
     protected function codeCoverageMapper(array $informationAsArray)
     {
-        $template = file_get_contents(__DIR__ . '/../Resources/templates/html_report.html');
-
-        $header = '<header class="jumbotron">';
-        $header .= '<h1>Debug report.</h1>';
+        $header = '<div class="alert alert-info">';
         $header .= '<ul class="list-group">';
         $header .= '<li class="list-group-item">Total time: ' . $informationAsArray['total_time_execution'] . '</li>';
         $header .= '<li class="list-group-item">Peak memory usage: ' . $informationAsArray['peak_memory_usage'] . '</li>';
         $header .= '</ul>';
-        $header .= '</header>';
+        $header .= '</div>';
 
         $report = $header;
 
@@ -78,6 +72,45 @@ class HtmlTemplate extends Abstracted
         }
         $report .= '</table>';
 
-        return sprintf($template, $report);
+        return $report;
+    }
+
+    protected function serverMapper(array $informationAsArray)
+    {
+        $header = '<div class="alert alert-info">';
+        $header .= '<ul class="list-group">';
+        $header .= '<li class="list-group-item">Total time: ' . $informationAsArray['total_time_execution'] . '</li>';
+        $header .= '<li class="list-group-item">Peak memory usage: ' . $informationAsArray['peak_memory_usage'] . '</li>';
+        $header .= '</ul>';
+        $header .= '</div>';
+
+        $report = $header;
+
+        $this->removeCommonInfo($informationAsArray);
+
+        $report .= '<table class="table">';
+
+        foreach ($informationAsArray as $file => $fileInformation) {
+            $report .= '<tr><td><strong>File:</strong></td><td colspan="2">' . $file . '</td></tr>';
+            $report .= '<tr><td><strong>File coverage:</strong></td><td colspan="2">' . $fileInformation['lines_coverage'] . ' % </td></tr>';
+            $report .= '<tr><td><strong>File </strong></td><td><strong>Executions</strong></td><td><strong>Code</strong></td></tr>';
+            unset ($fileInformation['lines_coverage']);
+            foreach ($fileInformation as $lineInformation) {
+                foreach ($lineInformation as $lineNumber => $singleLineInformation) {
+                    $report .= '<tr><td><a href="'. sprintf(self::PROTOCOL_URL, $file, $lineNumber) .'">'.$file.':'.$lineNumber.'</a></td>';
+                    foreach ($singleLineInformation as $infoKey => $infoContent) {
+                        if ($infoKey == 'content') {
+                            $report .= '<td><pre class="prettyprint">' . $infoContent . '</pre></td>';
+                        } else {
+                            $report .= '<td>' . $infoContent . '</td>';
+                        }
+                    }
+                    $report .= '</tr>';
+                }
+            }
+        }
+        $report .= '</table>';
+
+        return $report;
     }
 }

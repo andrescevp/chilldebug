@@ -25,7 +25,7 @@ abstract class Abstracted
     private function getReportFilename($format)
     {
         preg_match('/0\.(?P<decimal>\d+)/', microtime(), $matches);
-        $codeCoverageFile = 'code_coverage_' . date('Y_m_d_h_i_s_').$matches['decimal'];
+        $codeCoverageFile = 'full_report_' . date('Y_m_d_h_i_s_').$matches['decimal'];
 
         return $codeCoverageFile  . '.' . $format;
     }
@@ -58,7 +58,7 @@ abstract class Abstracted
      *
      * @return mixed
      */
-    abstract public function dump(array $informationAsArray, $kindOfInformation);
+    abstract public function dump($fileName);
 
     /**
      * @param array $informationAsArray
