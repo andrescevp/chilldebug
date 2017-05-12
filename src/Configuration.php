@@ -19,5 +19,5 @@ class Configuration
      *
      * @var string
      */
-    public $template = 'plain';
+    public $template = 'html';
 }
