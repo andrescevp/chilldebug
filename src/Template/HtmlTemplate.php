@@ -3,6 +3,7 @@
 namespace ChillDebug\Template;
 
 use ChillDebug\Helper\Filesystem;
+use ChillDebug\Helper\XdebugTraceFileParser;
 
 
 /**
@@ -25,11 +26,11 @@ class HtmlTemplate extends Abstracted
 
         $coverage = $this->codeCoverageMapper(json_decode(file_get_contents($fileName . '.cvg'), true));
         $server   = $this->serverMapper(json_decode(file_get_contents($fileName . '.svr'), true));
-        $trace    = file_get_contents($fileName . '.xt');
+        $trace    = $this->stackTraceMapper(explode(PHP_EOL, file_get_contents($fileName . '.xt')));
 
         $report = '';
 
-        Filesystem::dump($fileName . '.html', sprintf($template, $fileName, '', $coverage, $server));
+        Filesystem::dump($fileName . '.html', sprintf($template, $fileName, $trace, $coverage, $server));
     }
 
     /**
@@ -93,9 +94,26 @@ class HtmlTemplate extends Abstracted
 
         foreach ($informationAsArray as $infoKey => $information) {
             $report .= '<li class="list-group-item">' . ucfirst($infoKey) . '<pre class="prettyprint">' . json_encode($information,
-                JSON_PRETTY_PRINT) . '</pre></li>';
+                    JSON_PRETTY_PRINT) . '</pre></li>';
         }
         $report .= '</ul>';
+
+        return $report;
+    }
+
+    protected function stackTraceMapper(array $informationAsArray)
+    {
+        $report = '';
+
+        foreach ($informationAsArray as $infoLine) {
+            if (preg_match('/<table.*/', $infoLine)) {
+                $infoLineAux = str_replace('class=\'xdebug-trace\' dir=\'ltr\' border=\'1\' cellspacing=\'0\'',
+                    'class=\'table\'', $infoLine);
+                $report .= $infoLineAux;
+            } else {
+                $report .= $infoLine;
+            }
+        }
 
         return $report;
     }

@@ -71,6 +71,10 @@ class Debugger
         ini_set('xdebug.var_display_max_depth', 2);
         ini_set('xdebug.var_display_max_data', 128);
         ini_set('xdebug.show_local_vars', 1);
+        ini_set('xdebug.show_mem_delta', 1);
+        ini_set('xdebug.cli_color', 1);
+        ini_set('xdebug.max_nesting_level', 1000);
+        ini_set('xdebug.trace_format', 2); // 0 is text, 1 is machine, 2 is html
         xdebug_start_trace($this->traceFile);
         xdebug_start_code_coverage();
     }
