@@ -13,20 +13,50 @@ Feel free to collaborate or give feedback.
 #Usage
 
 ```
-include_once(__DIR__ . '/../vendor/autoload.php');
+<?php
+include_once(__DIR__ . '/vendor/autoload.php');
 
 function a_test($str)
 {
     echo "\nHi: $str";
 }
 
+function b_test($str)
+{
+    echo "\nHi: $str";
+}
+
+function c_test($str)
+{
+    echo "\nHi: $str";
+}
+$config = new \ChillDebug\Configuration();
+$config->dumpDebugFiles = true;
+$config->generateHtmlView = true;
+//$config->reportsPath = '/ABSOLUTE/PATH/TO/DUMP/FILES';
 $debugger = new \ChillDebug\Debugger();
 
 $debugger->enable();
 
-a_test('friend');
+include 'test2.php';
 
-$debugger->getCodeCoverageInformation();
+$string = ' friend';
+a_test($string);
+a_test($a);
+a_test(TEST);
+
+
+$str = "Xdebug";
+function ret_ord( $c )
+{
+    return ord( $c );
+}
+
+foreach ( str_split( $str ) as $char )
+{
+    echo $char, ": ", ret_ord( $char ), "\n";
+}
+
 $debugger->disable();
 ```
 

@@ -5,7 +5,7 @@
   "description": "Library to do from debug something easy (hopefully)",
   "autoload": {
     "psr-4": {
-      "ChillDebug\\": "src/"
+      "ChillDebug\\": "src/ChillDebug/"
     }
   },
   "require": {

@@ -1,6 +1,8 @@
 <?php
 namespace ChillDebug\Template;
 
+use ChillDebug\Configuration;
+
 /**
  * Class Factory
  * @package ChillDebug\Template
@@ -12,7 +14,7 @@ class Factory
      *
      * @return Abstracted
      */
-    public function getTemplate($template)
+    public function getTemplate($template, Configuration $configuration)
     {
         $class = __NAMESPACE__ . '\\' . ucfirst($template) . 'Template';
 
@@ -20,6 +22,6 @@ class Factory
             throw new \LogicException($class . ' do not exist');
         }
 
-        return new $class();
+        return new $class($configuration);
     }
 }
